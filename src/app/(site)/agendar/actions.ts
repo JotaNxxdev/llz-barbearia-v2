@@ -69,7 +69,7 @@ export async function buscarHorariosLivres(
 
 type ResultadoAgendamento =
   | { ok: true; codigoAcesso: string; pixNecessario: boolean; chavePix: string | null; nomeTitularPix: string | null }
-  | { ok: false; motivo: 'horario_ocupado' | 'dados_invalidos' | 'erro_inesperado'; detalhe?: string }
+  | { ok: false; motivo: 'horario_ocupado' | 'dados_invalidos' | 'erro_inesperado' }
 
 function gerarCodigoAcesso() {
   const alfabeto = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
@@ -116,7 +116,7 @@ export async function criarAgendamento(
       return { ok: false, motivo: 'horario_ocupado' }
     }
     console.error('[Supabase] Falha ao criar agendamento:', error)
-    return { ok: false, motivo: 'erro_inesperado', detalhe: `${error.code ?? ''} ${error.message}`.trim() }
+    return { ok: false, motivo: 'erro_inesperado' }
   }
 
   return {
