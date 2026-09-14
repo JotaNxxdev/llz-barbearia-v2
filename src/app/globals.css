@@ -1,17 +1,69 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 :root {
   --background: #0b0b0d;
   --foreground: #f2efe9;
-  --accent: #c9a24b;
-  --muted: #16161a;
+
+  --card: #15151a;
+  --card-foreground: #f2efe9;
+
+  --popover: #17171c;
+  --popover-foreground: #f2efe9;
+
+  --primary: #c9a24b;
+  --primary-foreground: #171206;
+
+  --secondary: #1f1f26;
+  --secondary-foreground: #f2efe9;
+
+  --muted: #19191f;
+  --muted-foreground: #9c9ba3;
+
+  --accent: #22222a;
+  --accent-foreground: #f2efe9;
+
+  --destructive: #e5484d;
+  --destructive-foreground: #fff7f7;
+
+  --success: #4caf7d;
+  --success-foreground: #06170f;
+
+  --border: #24242b;
+  --input: #24242b;
+  --ring: color-mix(in srgb, var(--primary) 60%, transparent);
+
+  --radius: 0.9rem;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-accent: var(--accent);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 0.4rem);
+  --radius-md: calc(var(--radius) - 0.2rem);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 0.4rem);
+
   --font-sans: var(--font-geist-sans);
   --font-display: var(--font-playfair);
   --font-mono: var(--font-geist-mono);
@@ -24,4 +76,8 @@ body {
 
 .font-display {
   font-family: var(--font-display), serif;
+}
+
+* {
+  border-color: var(--border);
 }
