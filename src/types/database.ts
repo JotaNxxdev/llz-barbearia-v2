@@ -272,6 +272,13 @@ export interface Database {
         }
         Returns: boolean
       }
+      horarios_ocupados: {
+        Args: {
+          p_barbeiro_id: string
+          p_data: string
+        }
+        Returns: { hora: string }[]
+      }
     }
   }
 }

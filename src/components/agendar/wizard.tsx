@@ -98,7 +98,7 @@ export function AgendamentoWizard({
 
     if (resposta.ok) {
       setResultado({
-        codigoAcesso: resposta.agendamento.codigo_acesso,
+        codigoAcesso: resposta.codigoAcesso,
         pixNecessario: resposta.pixNecessario,
         chavePix: resposta.chavePix,
         nomeTitularPix: resposta.nomeTitularPix,

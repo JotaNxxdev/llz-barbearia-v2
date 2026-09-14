@@ -6,7 +6,7 @@ import { novoAgendamentoSchema, type NovoAgendamentoInput } from '@/lib/agendame
 import { diaDaSemana, gerarSlots } from '@/lib/horarios'
 import { getTenantPorSlug } from '@/lib/tenant'
 import { apenasDigitos } from '@/lib/whatsapp'
-import type { Agendamento, HorarioDisponivel } from '@/types/database'
+import type { HorarioDisponivel } from '@/types/database'
 
 export async function buscarHorariosBarbeiro(
   barbeiroId: string
@@ -50,21 +50,17 @@ export async function buscarHorariosLivres(
     }
   }
 
-  const { data: ocupados, error: erroOcupados } = await supabase
-    .from('agendamentos')
-    .select('hora')
-    .eq('barbeiro_id', barbeiroId)
-    .eq('data', data)
-    .neq('status', 'cancelado')
+  const { data: ocupados, error: erroOcupados } = await supabase.rpc('horarios_ocupados', {
+    p_barbeiro_id: barbeiroId,
+    p_data: data,
+  })
 
   if (erroOcupados) {
     console.error('[Supabase] Falha ao buscar horários ocupados:', erroOcupados)
     return []
   }
 
-  const horasOcupadas = new Set(
-    (ocupados ?? []).map((a) => a.hora.slice(0, 5))
-  )
+  const horasOcupadas = new Set((ocupados ?? []).map((o) => o.hora.slice(0, 5)))
 
   return Array.from(todosSlots)
     .filter((slot) => !horasOcupadas.has(slot))
@@ -72,7 +68,7 @@ export async function buscarHorariosLivres(
 }
 
 type ResultadoAgendamento =
-  | { ok: true; agendamento: Agendamento; pixNecessario: boolean; chavePix: string | null; nomeTitularPix: string | null }
+  | { ok: true; codigoAcesso: string; pixNecessario: boolean; chavePix: string | null; nomeTitularPix: string | null }
   | { ok: false; motivo: 'horario_ocupado' | 'dados_invalidos' | 'erro_inesperado'; detalhe?: string }
 
 function gerarCodigoAcesso() {
@@ -97,26 +93,23 @@ export async function criarAgendamento(
 
   const { barbeiroId, servicoId, data, hora, nome, whatsapp, email, observacao } =
     validado.data
+  const codigoAcesso = gerarCodigoAcesso()
 
   const supabase = await createClient()
-  const { data: agendamento, error } = await supabase
-    .from('agendamentos')
-    .insert({
-      tenant_id: tenant.id,
-      barbeiro_id: barbeiroId,
-      servico_id: servicoId,
-      data,
-      hora,
-      cliente_nome: nome,
-      cliente_whatsapp: apenasDigitos(whatsapp),
-      cliente_email: email || null,
-      observacao: observacao || null,
-      status: 'pendente',
-      pix_status: tenant.chave_pix ? 'aguardando' : 'nao_aplicavel',
-      codigo_acesso: gerarCodigoAcesso(),
-    })
-    .select('*')
-    .single()
+  const { error } = await supabase.from('agendamentos').insert({
+    tenant_id: tenant.id,
+    barbeiro_id: barbeiroId,
+    servico_id: servicoId,
+    data,
+    hora,
+    cliente_nome: nome,
+    cliente_whatsapp: apenasDigitos(whatsapp),
+    cliente_email: email || null,
+    observacao: observacao || null,
+    status: 'pendente',
+    pix_status: tenant.chave_pix ? 'aguardando' : 'nao_aplicavel',
+    codigo_acesso: codigoAcesso,
+  })
 
   if (error) {
     if (error.code === '23505') {
@@ -128,7 +121,7 @@ export async function criarAgendamento(
 
   return {
     ok: true,
-    agendamento,
+    codigoAcesso,
     pixNecessario: Boolean(tenant.chave_pix),
     chavePix: tenant.chave_pix,
     nomeTitularPix: tenant.nome_titular_pix,
