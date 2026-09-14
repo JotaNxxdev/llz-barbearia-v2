@@ -10,7 +10,10 @@ export const getTenantPorSlug = cache(async (slug: string): Promise<Tenant | nul
     .eq('slug', slug)
     .single()
 
-  if (error) return null
+  if (error) {
+    console.error(`[Supabase] Falha ao buscar tenant "${slug}":`, error)
+    return null
+  }
   return data
 })
 
@@ -23,7 +26,10 @@ export async function getBarbeirosAtivos(tenantId: string): Promise<Barbeiro[]> 
     .eq('ativo', true)
     .order('nome')
 
-  if (error) return []
+  if (error) {
+    console.error(`[Supabase] Falha ao buscar barbeiros do tenant "${tenantId}":`, error)
+    return []
+  }
   return data
 }
 
@@ -36,7 +42,10 @@ export async function getServicosAtivos(tenantId: string): Promise<Servico[]> {
     .eq('ativo', true)
     .order('nome')
 
-  if (error) return []
+  if (error) {
+    console.error(`[Supabase] Falha ao buscar serviços do tenant "${tenantId}":`, error)
+    return []
+  }
   return data
 }
 
@@ -52,6 +61,9 @@ export async function getAvaliacoesRecentes(
     .order('criado_em', { ascending: false })
     .limit(limite)
 
-  if (error) return []
+  if (error) {
+    console.error(`[Supabase] Falha ao buscar avaliações do tenant "${tenantId}":`, error)
+    return []
+  }
   return data
 }
