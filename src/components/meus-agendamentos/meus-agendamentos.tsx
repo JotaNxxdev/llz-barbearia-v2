@@ -22,25 +22,9 @@ import {
   buscaAgendamentosSchema,
   type BuscaAgendamentos,
 } from '@/lib/meus-agendamentos-schema'
+import { STATUS_LABEL, STATUS_VARIANT } from '@/lib/status'
 import { formatarWhatsapp } from '@/lib/whatsapp'
-import type { AgendamentoCliente, StatusAgendamento } from '@/types/database'
-
-const STATUS_LABEL: Record<StatusAgendamento, string> = {
-  pendente: 'Pendente',
-  confirmado: 'Confirmado',
-  cancelado: 'Cancelado',
-  concluido: 'Concluído',
-}
-
-const STATUS_VARIANT: Record<
-  StatusAgendamento,
-  'default' | 'secondary' | 'destructive' | 'success'
-> = {
-  pendente: 'secondary',
-  confirmado: 'default',
-  cancelado: 'destructive',
-  concluido: 'success',
-}
+import type { AgendamentoCliente } from '@/types/database'
 
 function podeCancelar(agendamento: AgendamentoCliente) {
   if (agendamento.status === 'cancelado' || agendamento.status === 'concluido') {
