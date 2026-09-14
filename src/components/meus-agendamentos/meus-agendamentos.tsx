@@ -7,9 +7,11 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import {
+  avaliarAgendamento,
   buscarAgendamentosCliente,
   cancelarAgendamento,
 } from '@/app/(site)/meus-agendamentos/actions'
+import { AvaliarForm } from '@/components/meus-agendamentos/avaliar-form'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -53,6 +55,8 @@ export function MeusAgendamentos() {
   const [agendamentos, setAgendamentos] = useState<AgendamentoCliente[] | null>(null)
   const [buscando, setBuscando] = useState(false)
   const [cancelandoId, setCancelandoId] = useState<string | null>(null)
+  const [avaliandoId, setAvaliandoId] = useState<string | null>(null)
+  const [enviandoAvaliacao, setEnviandoAvaliacao] = useState(false)
   const [credenciais, setCredenciais] = useState<{ whatsapp: string; codigoAcesso: string } | null>(
     null
   )
@@ -103,6 +107,30 @@ export function MeusAgendamentos() {
     setAgendamentos(
       (lista) =>
         lista?.map((a) => (a.id === id ? { ...a, status: 'cancelado' } : a)) ?? null
+    )
+  }
+
+  async function avaliar(id: string, nota: number, comentario: string) {
+    if (!credenciais) return
+    setEnviandoAvaliacao(true)
+    const resposta = await avaliarAgendamento({
+      agendamentoId: id,
+      nota,
+      comentario,
+      ...credenciais,
+    })
+    setEnviandoAvaliacao(false)
+
+    if (!resposta.ok) {
+      toast.error('Não foi possível enviar sua avaliação agora.')
+      return
+    }
+
+    toast.success('Obrigado pela avaliação!')
+    setAvaliandoId(null)
+    setAgendamentos(
+      (lista) =>
+        lista?.map((a) => (a.id === id ? { ...a, ja_avaliado: true } : a)) ?? null
     )
   }
 
@@ -192,6 +220,29 @@ export function MeusAgendamentos() {
                 {cancelandoId === agendamento.id ? 'Cancelando...' : 'Cancelar agendamento'}
               </Button>
             )}
+
+            {agendamento.status === 'concluido' && agendamento.ja_avaliado && (
+              <p className="text-sm text-muted-foreground">Você já avaliou este atendimento.</p>
+            )}
+
+            {agendamento.status === 'concluido' &&
+              !agendamento.ja_avaliado &&
+              (avaliandoId === agendamento.id ? (
+                <AvaliarForm
+                  enviando={enviandoAvaliacao}
+                  onEnviar={(nota, comentario) => avaliar(agendamento.id, nota, comentario)}
+                  onCancelar={() => setAvaliandoId(null)}
+                />
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="self-start"
+                  onClick={() => setAvaliandoId(agendamento.id)}
+                >
+                  Avaliar atendimento
+                </Button>
+              ))}
           </CardContent>
         </Card>
       ))}

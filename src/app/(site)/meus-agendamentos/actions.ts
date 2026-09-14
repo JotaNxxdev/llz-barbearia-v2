@@ -51,3 +51,27 @@ export async function cancelarAgendamento(input: {
 
   return { ok: Boolean(data) }
 }
+
+export async function avaliarAgendamento(input: {
+  agendamentoId: string
+  whatsapp: string
+  codigoAcesso: string
+  nota: number
+  comentario: string
+}): Promise<{ ok: boolean }> {
+  const supabase = await createClient()
+  const { data, error } = await supabase.rpc('avaliar_agendamento', {
+    p_agendamento_id: input.agendamentoId,
+    p_whatsapp: apenasDigitos(input.whatsapp),
+    p_codigo_acesso: input.codigoAcesso,
+    p_nota: input.nota,
+    p_comentario: input.comentario,
+  })
+
+  if (error) {
+    console.error('[Supabase] Falha ao avaliar agendamento:', error)
+    return { ok: false }
+  }
+
+  return { ok: Boolean(data) }
+}

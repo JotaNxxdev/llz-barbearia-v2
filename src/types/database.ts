@@ -251,6 +251,7 @@ export interface Database {
           servico_nome: string
           servico_preco: number
           barbeiro_nome: string
+          ja_avaliado: boolean
         }[]
       }
       cancelar_agendamento: {
@@ -258,6 +259,16 @@ export interface Database {
           p_id: string
           p_whatsapp: string
           p_codigo_acesso: string
+        }
+        Returns: boolean
+      }
+      avaliar_agendamento: {
+        Args: {
+          p_agendamento_id: string
+          p_whatsapp: string
+          p_codigo_acesso: string
+          p_nota: number
+          p_comentario: string
         }
         Returns: boolean
       }
