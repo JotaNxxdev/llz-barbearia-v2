@@ -1,11 +1,10 @@
+import { linkInstagram } from '@/lib/social'
 import { linkWhatsapp } from '@/lib/whatsapp'
 import type { Tenant } from '@/types/database'
 
 export function SiteFooter({ tenant }: { tenant: Tenant }) {
   const whatsappHref = tenant.whatsapp ? linkWhatsapp(tenant.whatsapp) : null
-  const instagramHref = tenant.instagram
-    ? `https://instagram.com/${tenant.instagram.replace(/^@/, '')}`
-    : null
+  const instagramHref = tenant.instagram ? linkInstagram(tenant.instagram) : null
 
   return (
     <footer className="mt-16 border-t border-border py-10">
