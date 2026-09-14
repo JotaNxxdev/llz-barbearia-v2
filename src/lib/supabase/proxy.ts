@@ -27,14 +27,19 @@ export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl
   const logado = Boolean(data.user)
 
-  const ehLogin = pathname === '/painel/login'
+  const CAMINHOS_PUBLICOS_PAINEL = [
+    '/painel/login',
+    '/painel/esqueci-senha',
+    '/painel/redefinir-senha',
+  ]
+  const ehPublico = CAMINHOS_PUBLICOS_PAINEL.includes(pathname)
   const ehAreaPainel = pathname.startsWith('/painel')
 
-  if (ehAreaPainel && !ehLogin && !logado) {
+  if (ehAreaPainel && !ehPublico && !logado) {
     return NextResponse.redirect(new URL('/painel/login', request.url))
   }
 
-  if (ehLogin && logado) {
+  if (pathname === '/painel/login' && logado) {
     return NextResponse.redirect(new URL('/painel', request.url))
   }
 

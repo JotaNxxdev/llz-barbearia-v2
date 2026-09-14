@@ -1,6 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import Link from 'next/link'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { entrar } from '@/app/painel/login/actions'
@@ -56,6 +57,12 @@ export function LoginForm() {
           {...register('senha')}
         />
         {errors.senha && <p className="text-sm text-destructive">{errors.senha.message}</p>}
+        <Link
+          href="/painel/esqueci-senha"
+          className="self-end text-xs text-muted-foreground hover:text-foreground"
+        >
+          Esqueci minha senha
+        </Link>
       </div>
 
       {erro && <p className="text-sm text-destructive">{erro}</p>}
