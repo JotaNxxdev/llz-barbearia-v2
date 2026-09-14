@@ -234,7 +234,34 @@ export interface Database {
       }
     }
     Views: Record<string, never>
-    Functions: Record<string, never>
+    Functions: {
+      buscar_agendamentos_cliente: {
+        Args: {
+          p_whatsapp: string
+          p_codigo_acesso: string
+        }
+        Returns: {
+          id: string
+          data: string
+          hora: string
+          status: StatusAgendamento
+          pix_status: PixStatus
+          observacao: string | null
+          codigo_acesso: string
+          servico_nome: string
+          servico_preco: number
+          barbeiro_nome: string
+        }[]
+      }
+      cancelar_agendamento: {
+        Args: {
+          p_id: string
+          p_whatsapp: string
+          p_codigo_acesso: string
+        }
+        Returns: boolean
+      }
+    }
   }
 }
 
@@ -245,3 +272,5 @@ export type Servico = Database['public']['Tables']['servicos']['Row']
 export type HorarioDisponivel = Database['public']['Tables']['horarios_disponiveis']['Row']
 export type Agendamento = Database['public']['Tables']['agendamentos']['Row']
 export type Avaliacao = Database['public']['Tables']['avaliacoes']['Row']
+export type AgendamentoCliente =
+  Database['public']['Functions']['buscar_agendamentos_cliente']['Returns'][number]
