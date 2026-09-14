@@ -5,6 +5,7 @@ import { DEFAULT_TENANT_SLUG } from '@/lib/config'
 import { novoAgendamentoSchema, type NovoAgendamentoInput } from '@/lib/agendamento-schema'
 import { diaDaSemana, gerarSlots } from '@/lib/horarios'
 import { getTenantPorSlug } from '@/lib/tenant'
+import { apenasDigitos } from '@/lib/whatsapp'
 import type { Agendamento, HorarioDisponivel } from '@/types/database'
 
 export async function buscarHorariosBarbeiro(
@@ -72,7 +73,7 @@ export async function buscarHorariosLivres(
 
 type ResultadoAgendamento =
   | { ok: true; agendamento: Agendamento; pixNecessario: boolean; chavePix: string | null; nomeTitularPix: string | null }
-  | { ok: false; motivo: 'horario_ocupado' | 'dados_invalidos' | 'erro_inesperado' }
+  | { ok: false; motivo: 'horario_ocupado' | 'dados_invalidos' | 'erro_inesperado'; detalhe?: string }
 
 function gerarCodigoAcesso() {
   const alfabeto = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
@@ -107,7 +108,7 @@ export async function criarAgendamento(
       data,
       hora,
       cliente_nome: nome,
-      cliente_whatsapp: whatsapp,
+      cliente_whatsapp: apenasDigitos(whatsapp),
       cliente_email: email || null,
       observacao: observacao || null,
       status: 'pendente',
@@ -122,7 +123,7 @@ export async function criarAgendamento(
       return { ok: false, motivo: 'horario_ocupado' }
     }
     console.error('[Supabase] Falha ao criar agendamento:', error)
-    return { ok: false, motivo: 'erro_inesperado' }
+    return { ok: false, motivo: 'erro_inesperado', detalhe: `${error.code ?? ''} ${error.message}`.trim() }
   }
 
   return {

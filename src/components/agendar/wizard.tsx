@@ -117,7 +117,11 @@ export function AgendamentoWizard({
       return
     }
 
-    toast.error('Não foi possível confirmar agora. Tente novamente em alguns instantes.')
+    toast.error(
+      resposta.detalhe
+        ? `Não foi possível confirmar agora. Detalhe técnico: ${resposta.detalhe}`
+        : 'Não foi possível confirmar agora. Tente novamente em alguns instantes.'
+    )
   }
 
   if (resultado && servico && barbeiro && data && hora) {
